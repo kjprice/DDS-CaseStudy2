@@ -9,16 +9,26 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Problem 1
 
-I emailed professor Merdi about what an *X matrix* is
+Here is the creation of the **X Matrix*
 
-```{python}
+#### SAS...
+![SAS Code](img/sas-code-x-matrix.png)
+![SAS Output](img/sas-output-x-matrix.png)
 
+#### Python...
+![Python Code and Output](img/python-code-output-x-matrix.png)
+
+#### R...
+```{r}
+numbers = c(4, 51, 2103, 5218, 2)
+X = data.frame(numbers)
+X
 ```
 
 ## Problem 2
 
 First we use the package `tseries` and then download the data
-```{r, cache=TRUE}
+```{r}
 library('tseries')
 SNPdata = get.hist.quote('gwph', quote='Close')
 ```
@@ -49,7 +59,7 @@ getVol = function(d, logrets) {
 Calculate the volatility for data, assuming about 250 days of trade per year
 
 ```{r}
-SNPvol = sd(SNPret) * sqrt(250) * 100
+SNPvol = sd(SNPreturns) * sqrt(250) * 100
 ```
 
 Calculate the *weighted* volatility from our  S&P data using increasingly strong decay factors .90, .97, .99 respectively...
@@ -93,4 +103,3 @@ Compare each of the sizes of trees against their diameters using box plots:
 sortedData = Orange[order(Orange$circumference),]
 boxplot(sortedData$circumference ~ sortedData$Tree)
 ```
-
