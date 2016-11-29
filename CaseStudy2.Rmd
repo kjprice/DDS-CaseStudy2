@@ -12,7 +12,17 @@ knitr::opts_chunk$set(echo = TRUE)
 Here is the creation of the **X Matrix*
 
 #### SAS...
-![SAS Code](img/sas-code-x-matrix.png)
+
+```
+data x;
+input numbers @@;
+datalines;
+4 51 2103 5218 2
+;
+run;
+
+proc print data = x;
+```
 ![SAS Output](img/sas-output-x-matrix.png)
 
 #### Python...
