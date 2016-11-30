@@ -137,7 +137,8 @@ diff.range = function(temps) {
   range.numbers[2] - range.numbers[1]
 }
 
-tapply(tempWithValues$Monthly.AverageTemp, tempWithValues$Country, diff.range)
+range.countries = tapply(tempWithValues$Monthly.AverageTemp, tempWithValues$Country, diff.range)
+head(range.countries)
 ```
 
 Here we have the top 20 countries with the maximum differences for the period since 1900. First we clean the data so that we are left with just the year:
@@ -165,7 +166,7 @@ And finally, we plot these temperatures
 
 ```{r}
 plot(most.varying.temps, type="o", col="red", xlab = "Country", ylab = "Temperature")
-legend("topright", pch=1, col=c('red'), c('Temp by country'), lty = 10, text.width = 4)
+legend("topright", pch=1, col=c('red'), c('Temp by country'), lty = 10, text.width = 4.5)
 ```
 
 ### United States Temperatures
@@ -195,6 +196,8 @@ plot(x.values, avg.temperatures, xlab = 'Year', ylab='Temperature')
 Calculate 1 year difference
 ```{r}
 one.year.difference = (c(0, avg.temperatures) - c(avg.temperatures, 0))[2:length(avg.temperatures)]
+
+one.year.difference
 ```
 
 Most significantly different temperature
@@ -231,7 +234,7 @@ city.temperature.ranges = tapply(city.since.1900$Monthly.AverageTemp, city.since
 most.varying.city = sort(city.temperature.ranges, TRUE)[1:20]
 
 plot(most.varying.temps, type="o", col = 'blue', xlab = 'Year', ylab='Temperature')
-legend("topright", pch=1, col=c('blue'), c('Temp by city'), text.width = 6)
+legend("topright", pch=1, col=c('blue'), c('Temp by city'), text.width = 4)
 ```
 
 
