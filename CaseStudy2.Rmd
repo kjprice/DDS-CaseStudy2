@@ -113,3 +113,138 @@ Compare each of the sizes of trees against their diameters using box plots:
 sortedData = Orange[order(Orange$circumference),]
 boxplot(sortedData$circumference ~ sortedData$Tree)
 ```
+
+## Problem 4
+
+First we download data from elsewhere and then load the data into our environment
+
+```{r}
+city = read.csv('data/CityTemp.csv')
+temp = read.csv('data/Temp.csv')
+```
+
+Then we remove rows with `NA` values
+
+```{r}
+tempWithValues = temp[!is.na(temp$Monthly.AverageTemp),]
+```
+
+Now, we the difference between the maximum and the minimum monthly average temperatures for each country
+
+```{r}
+diff.range = function(temps) {
+  range.numbers = range(temps)
+  range.numbers[2] - range.numbers[1]
+}
+
+tapply(tempWithValues$Monthly.AverageTemp, tempWithValues$Country, diff.range)
+```
+
+Here we have the top 20 countries with the maximum differences for the period since 1900. First we clean the data so that we are left with just the year:
+
+```{r}
+# remove na values
+tempWithDates = tempWithValues[!is.na(tempWithValues$Date),]
+
+tempWithDates$date = as.character(tempWithDates$Date)
+tempWithDates$year = gsub('[0-9]{1,2}/[0-9]{1,2}/', '', tempWithDates$date)
+tempWithDates$year = gsub('-[0-9]{1,2}-[0-9]{1,2}', '', tempWithDates$year)
+```
+
+Then we take only the temperatures after 1900
+
+```{r}
+temp.since.1900 = tempWithDates[tempWithDates$year > "1900",]
+
+country.temperature.ranges = tapply(temp.since.1900$Monthly.AverageTemp, temp.since.1900$Country, diff.range)
+
+most.varying.temps = sort(country.temperature.ranges, TRUE)[1:20]
+```
+
+And finally, we plot these temperatures
+
+```{r}
+plot(most.varying.temps, type="o", col="red", xlab = "Country", ylab = "Temperature")
+legend("topright", pch=1, col=c('red'), c('Temp by country'), lty = 10, text.width = 4)
+```
+
+### United States Temperatures
+
+Get temperatures, from USA, after 1990:
+
+```{r}
+temps.after.1990 = tempWithDates[tempWithDates$year >= "1990",]
+UStemp = temps.after.1990[temps.after.1990$Country == 'United States',]
+```
+
+Calculate farenheit degrees
+
+```{r}
+library(NISTunits)
+UStemp$farenheit = NISTdegCtOdegF(UStemp$Monthly.AverageTemp)
+```
+
+Average difference of temperatures, in the USA, each year
+
+```{r}
+avg.temperatures = tapply(UStemp$farenheit, UStemp$year, mean)
+x.values = 1990 + 0:(length(avg.temperatures)-1)
+plot(x.values, avg.temperatures, xlab = 'Year', ylab='Temperature')
+```
+
+Calculate 1 year difference
+```{r}
+one.year.difference = (c(0, avg.temperatures) - c(avg.temperatures, 0))[2:length(avg.temperatures)]
+```
+
+Most significantly different temperature
+```{r}
+sort(abs(one.year.difference), TRUE)[1]
+```
+
+The most significant different temperature happened between 2012 and 2013
+
+### Find City Data
+
+First, clean the data by removing `na` values
+
+```{r}
+cityWithValues = city[!is.na(city$Monthly.AverageTemp),]
+cityWithDates = cityWithValues[!is.na(cityWithValues$Date),]
+```
+
+Get temperatures, by city, after 1900
+
+```{r}
+cityWithDates$date = as.character(cityWithDates$Date)
+cityWithDates$year = gsub('[0-9]{1,2}/[0-9]{1,2}/', '', cityWithDates$date)
+cityWithDates$year = gsub('-[0-9]{1,2}-[0-9]{1,2}', '', cityWithDates$year)
+
+city.since.1900 = cityWithDates[cityWithDates$year > "1900",]
+```
+
+Find the most significant different temperature
+
+```{r}
+city.temperature.ranges = tapply(city.since.1900$Monthly.AverageTemp, city.since.1900$City, diff.range)
+
+most.varying.city = sort(city.temperature.ranges, TRUE)[1:20]
+
+plot(most.varying.temps, type="o", col = 'blue', xlab = 'Year', ylab='Temperature')
+legend("topright", pch=1, col=c('blue'), c('Temp by city'), text.width = 6)
+```
+
+
+Now, compare what we just found with the city temperature with what we found earlier with country temperatures.
+
+```{r}
+
+plot(most.varying.city, type = "o", col='red', xlab = 'Year', ylab='Temperature')
+lines(most.varying.temps, type="o", col = 'blue')
+legend("topright", pch=1, col=c('red', 'blue'), c('Temp by country', 'Temp by city'), text.width = 5)
+```
+
+As we could expect, the two plots look very similar.
+
+
+
